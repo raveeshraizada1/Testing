@@ -1,0 +1,67 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "containerGroups_demo_mvc_name": {
+            "defaultValue": "demo-mvc",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.ContainerInstance/containerGroups",
+            "apiVersion": "2021-03-01",
+            "name": "[parameters('containerGroups_demo_mvc_name')]",
+            "location": "eastus",
+            "properties": {
+                "sku": "Standard",
+                "containers": [
+                    {
+                        "name": "[parameters('containerGroups_demo_mvc_name')]",
+                        "properties": {
+                            "image": "[concat('raveesh.azurecr.io/dotnetcore', parameters('containerGroups_demo_mvc_name'), ':v2')]",
+                            "ports": [
+                                {
+                                    "protocol": "TCP",
+                                    "port": 80
+                                }
+                            ],
+                            "environmentVariables": [
+                                {
+                                    "name": "ASPNETCORE_ENVIRONMENT",
+                                    "value": "staging"
+                                }
+                            ],
+                            "resources": {
+                                "requests": {
+                                    "memoryInGB": 1.5,
+                                    "cpu": 1
+                                }
+                            }
+                        }
+                    }
+                ],
+                "initContainers": [],
+                "imageRegistryCredentials": [
+                    {
+                        "server": "raveesh.azurecr.io",
+                        "username": "raveesh"
+                    }
+                ],
+                "restartPolicy": "OnFailure",
+                "ipAddress": {
+                    "ports": [
+                        {
+                            "protocol": "TCP",
+                            "port": 80
+                        }
+                    ],
+                    "type": "Public",
+                    "dnsNameLabel": "demo-staging-mvc"
+                },
+                "osType": "Windows"
+            }
+        }
+    ]
+}

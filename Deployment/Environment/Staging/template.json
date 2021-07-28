@@ -1,0 +1,67 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "containerGroups_demo_api_name": {
+            "defaultValue": "demo-api",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.ContainerInstance/containerGroups",
+            "apiVersion": "2021-03-01",
+            "name": "[parameters('containerGroups_demo_api_name')]",
+            "location": "eastus",
+            "properties": {
+                "sku": "Standard",
+                "containers": [
+                    {
+                        "name": "[parameters('containerGroups_demo_api_name')]",
+                        "properties": {
+                            "image": "raveesh.azurecr.io/dotnetcoredemo-webapi:v1",
+                            "ports": [
+                                {
+                                    "protocol": "TCP",
+                                    "port": 80
+                                }
+                            ],
+                            "environmentVariables": [
+                                {
+                                    "name": "ASPNETCORE_ENVIRONMENT",
+                                    "value": "staging"
+                                }
+                            ],
+                            "resources": {
+                                "requests": {
+                                    "memoryInGB": 1.5,
+                                    "cpu": 1
+                                }
+                            }
+                        }
+                    }
+                ],
+                "initContainers": [],
+                "imageRegistryCredentials": [
+                    {
+                        "server": "raveesh.azurecr.io",
+                        "username": "raveesh"
+                    }
+                ],
+                "restartPolicy": "OnFailure",
+                "ipAddress": {
+                    "ports": [
+                        {
+                            "protocol": "TCP",
+                            "port": 80
+                        }
+                    ],
+                    "type": "Public",
+                    "dnsNameLabel": "demo-staging-api-test"
+                },
+                "osType": "Windows"
+            }
+        }
+    ]
+}
